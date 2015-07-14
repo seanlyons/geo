@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8 />
+  <title></title>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.0/mapbox.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/v2.2.0/mapbox.css' rel='stylesheet' />
+  <style>
+    body { margin:0; padding:0; }
+    .map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+<div id='map-one' class='map'> </div>
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoiZHVlbmRlIiwiYSI6Ijk0NDg5NTU2M2Q3OGU2ZmZhMWNjYzg3MjMyOWM1YmVlIn0.dKQrnkU5ALH3ezZ9pZ4Yeg';
+var map = L.mapbox.map('map-one', 'mapbox.streets').setView([37.765,-122.44], 13);
+
+var geojson = (function() {
+        var json = null;
+        $.ajax({
+            'async': false,
+            'global': false,
+            'url': "sf.json",
+            'dataType': "json",
+            'success': function (data) {
+                json = data;
+            }
+        });
+        return json;
+})();
+
+console.log(geojson);
+var myLayer = L.mapbox.featureLayer().addTo(map);
+myLayer.setGeoJSON(geojson);
+
+</script>
+</body>
+</html>

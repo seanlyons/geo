@@ -1,1 +1,22 @@
-<script src="https://embed.github.com/view/geojson/seanlyons/geo/master/sf.json?height=600&width=1000"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.js'></script>
+<style>
+	#map {
+		height:180px;
+	}
+</style>
+<div id="map"></div>
+<script>
+	var map = L.mapbox.map('map', 'mapbox.streets');
+	var mapbox_public_key = 'pk.eyJ1IjoiZHVlbmRlIiwiYSI6Ijk0NDg5NTU2M2Q3OGU2ZmZhMWNjYzg3MjMyOWM1YmVlIn0.dKQrnkU5ALH3ezZ9pZ4Yeg';
+  var mapbox_id = 'duende.mn7pie6c';
+	var mapbox_api = 'https://api.tiles.mapbox.com/v4/' + mapbox_id + '.json?access_token=' + mapbox_public_key;
+
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/duende.mn7pie6c/51.505/-0.09/13.png?access_token=' + mapbox_public_key, {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    accessToken: mapbox_public_key
+}).addTo(map);
+</script>
