@@ -18,8 +18,12 @@ var neighborhoods_layer;
 var map;
 var geojson;
 var L;
+var x = 37.729223;
+var y = -122.444564;
 
 function initialize(self_coords) {
+console.log('self_coords');
+console.log(self_coords);
     L.mapbox.accessToken = 'pk.eyJ1IjoiZHVlbmRlIiwiYSI6Ijk0NDg5NTU2M2Q3OGU2ZmZhMWNjYzg3MjMyOWM1YmVlIn0.dKQrnkU5ALH3ezZ9pZ4Yeg';
     sf_coords = [37.765,-122.44];
     map = L.mapbox.map('map-one', 'mapbox.streets').setView(sf_coords, 13);
@@ -36,48 +40,39 @@ function initialize(self_coords) {
         });
         return json;
     })();
-
-    console.log(geojson);
-    /*neighborhoods_layer = L.mapbox.featureLayer().addTo(map);
-    neighborhoods_layer.setGeoJSON(geojson);*/
-
     neighborhoods_layer = L.geoJson(geojson, {
         fillColor: '#444',
         weight: 1
     });
     map.addLayer(neighborhoods_layer);
     L.marker(self_coords).addTo(map);
-
+    console.log(53);
 }
 
-/*$( ".leaflet-clickable" ).click(function() {
-    console.log( "Handler for .click() called." );
-});*/
+function get_location() {
+    navigator.geolocation.getCurrentPosition(show_map);
+}
 
-/*$('#map').on('click', '.trigger', function() {
-    alert('Hello from Toronto!');
-});*/
+function show_map(position) {
+  x = position.coords.latitude;
+  y = position.coords.longitude;
+}
 
-initialize([37.729223,-122.444564]);
 
-console.log(neighborhoods_layer);
+get_location();
+initialize([x, y]);
+
 
 neighborhoods_layer.on('click', function(e) {
     self = e.layer.feature.properties.name;
-    /*e.setStyle({fillColor: '#dddddd'});*/
-    /*console.log(e.layer.feature.properties.name);
-    console.log(e.layer.options.color);
-    e.layer.options.color = '#ff0000';
-    console.log(e.layer.options.color);*/
     map.eachLayer(function(layer) {
         feature = layer['feature'];
-        //console.log(feature);
+
         if (feature
         && feature.properties
         && feature.properties.name
         && self == feature.properties.name) {
             layer.setStyle({color:'#f00', fillColor:'#f00'});
-            // console.log(feature.properties.name);
         }
     });
 });
