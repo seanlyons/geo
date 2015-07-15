@@ -46,7 +46,6 @@ function initialize(self_coords) {
         weight: 1
     });
     map.addLayer(neighborhoods_layer);
-    L.marker(self_coords).addTo(map);
 }
 
 function get_location() {
@@ -54,8 +53,8 @@ function get_location() {
 }
 
 function show_map(position) {
-  x = position.coords.latitude;
-  y = position.coords.longitude;
+	x = position.coords.latitude;
+	y = position.coords.longitude;
 }
 
 function toggle_neighborhood_color(layer) {
@@ -68,31 +67,8 @@ function toggle_neighborhood_color(layer) {
 	}
 }
 
-function neighborhood_dance() {
-	if (neighborhoods_count == -1) {
-		map.eachLayer(function(layer) {
-			neighborhoods_count++;
-		});
-	}
-	rand = 0|Math.random() * neighborhoods_count;
-	timeout_ms = 0|Math.random() * 999;
-	i = 0;
-	toggled = 0;
-	map.eachLayer(function(layer) {
-		i++;
-		if (i == rand && rand > 1) {
-			toggled++;
-			toggle_neighborhood_color(layer);
-		}
-	});
-	console.log('rand = ' + rand, ', timeout_ms = ' + timeout_ms + ', toggled = ' + toggled);
-}
-
-
 get_location();
 initialize([x, y]);
-neighborhood_dance();
-var intervalID = setInterval(function(){neighborhood_dance(); }, timeout_ms);
 
 neighborhoods_layer.on('click', function(e) {
     self = e.layer.feature.properties.name;
