@@ -46,7 +46,6 @@ console.log(self_coords);
     });
     map.addLayer(neighborhoods_layer);
     L.marker(self_coords).addTo(map);
-    console.log(53);
 }
 
 function get_location() {
@@ -56,6 +55,17 @@ function get_location() {
 function show_map(position) {
   x = position.coords.latitude;
   y = position.coords.longitude;
+}
+
+function toggle_neighborhood_color(layer) {
+	off = '#444';
+	on = '#f00';
+	if (layer.options.fillColor == off) {
+		layer.setStyle({color:on, fillColor:on});
+	} else {
+		layer.setStyle({color:off, fillColor:off});
+	}
+	
 }
 
 
@@ -72,7 +82,7 @@ neighborhoods_layer.on('click', function(e) {
         && feature.properties
         && feature.properties.name
         && self == feature.properties.name) {
-            layer.setStyle({color:'#f00', fillColor:'#f00'});
+            toggle_neighborhood_color(layer);
         }
     });
 });
