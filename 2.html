@@ -23,8 +23,51 @@ var L;
 var x = 37.729223;
 var y = -122.444564;
 
-function rand_str(len) {
+function add_ele(obj, ele) {
+    console.log('add_ele: obj is ', obj, ' ele is ' + ele);
+    for (i in obj) {
+        console.log('add_ele: i ', i, 'obj[i] = ' +obj[i]+', ele = ', ele);
+        if (obj[i] == ele) {
+            console.log('add_ele: found!');
+            return;
+        }
+    }
+    obj.push(ele);
+    console.log('add_ele: done!');
+}
+
+function del_ele(obj, ele) {
+    console.log('del_ele: obj is ', obj, ' ele is ' + ele);
+    for (i in obj) {
+        console.log('del_ele: i ', i, ' = ', ele);
+        if (obj[i] == ele) {
+            obj.splice(i, 1);
+            console.log('del_ele: found!');
+        }
+    }
+    console.log('del_ele: returning obj ', obj);
+    return;
+}
+
+function contains(haystack, needle) {
+    for (i in haystack) {
+        if (haystack[i] == needle) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+function generate_cookie_id(len) {
+    if ($.cookie('id')) {
+        console.log($.cookie('hit'));
+        return;
+    }
     len = (len || 29);
+    
+    //Generate a high-entropy string to stand in for the UID. This produces something like 29^62 (4.6e90)
+    //combinations per second, which is random enough for me. Can add OAuth or something later if needed.
     
     alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     now = Math.floor((new Date).getTime() / 1000);
@@ -34,24 +77,31 @@ function rand_str(len) {
         str += alphanum[Math.floor((Math.random() * alphanum.length) + 1)];
     }
     str += '_' + now;
-    console.log(str);
+    $.cookie('id', str);
+    empty = [];
+    $.cookie('hit', JSON.stringify(empty));
 }
-rand_str();
+
+//$.removeCookie('id');
+generate_cookie_id();
 
 function initialize(self_coords) {
     L.mapbox.accessToken = 'pk.eyJ1IjoiZHVlbmRlIiwiYSI6Ijk0NDg5NTU2M2Q3OGU2ZmZhMWNjYzg3MjMyOWM1YmVlIn0.dKQrnkU5ALH3ezZ9pZ4Yeg';
     sf_coords = [37.765,-122.44];
     map = L.mapbox.map('map-one', 'mapbox.streets').setView(sf_coords, 13);
 	
-	neighborhoods_layer = L.geoJson(geojson, {
-        fillColor: '#444',
-        weight: 1
-    }).addTo(map);
-    
-	$.getJSON("sf.json", function(json) {
-        pretty = JSON.stringify(json, null, 4);
+    default_css = { fillColor: '#444', weight: 1 };
+	neighborhoods_layer = L.geoJson(geojson, default_css).addTo(map);
+        
+	$.getJSON("sf2.json", function(json) {
         var i = 0;
         feature = [];
+        $.each(json, function(x) {
+            json[x].features[0]['id'] = x;
+            neighborhoods_layer.addData(json[x]);
+        });
+        return true;
+
         $.each(json['features'], function() {
             i++;
             if (this) {
@@ -59,19 +109,19 @@ function initialize(self_coords) {
                 ent.id = i;
                 feature.push(ent);
             }
-            return true;
         });
         json.features = feature;
         neighborhoods_layer.addData(json);
         console.log(neighborhoods_layer);
 	});
-	
-	//console.log('map!');
-	i = 0;
-	map.eachLayer(function(layer) {
-		i++;
-	});
-	//console.log(i);
+    
+    i = 0;
+    hits = JSON.parse( $.cookie('hit') );
+
+    console.log('neighborhoods_layer!');
+    console.log(neighborhoods_layer);
+    console.log(neighborhoods_layer.getLayers());
+    console.log('!neighborhoods_layer!');
 }
 
 function get_location() {
@@ -95,11 +145,24 @@ function toggle_neighborhood_color(layer) {
 	} else {
 		//console.log('layer.options.fillColor = ' + layer.options.fillColor);
 	}
+    id = layer.feature.id;
+    if (!$.cookie('hit')) {
+        window.alert('how are you missing the hit cookie?');
+        return;
+    }
+    hits = JSON.parse( $.cookie('hit') );
+    //console.log(typeof(hits), hits);
+
+    
 	if (layer.options.fillColor == off) {
 		layer.setStyle({color:on, fillColor:on});
+        add_ele(hits, id);
 	} else {
+        del_ele(hits, id);
 		layer.setStyle({color:off, fillColor:off});
 	}
+    //console.log(hits);
+    $.cookie('hit', JSON.stringify( hits ));
 }
 
 function in_neighborhood(x_y, callback_name) {
@@ -120,6 +183,7 @@ in_neighborhood([x, y], locate_neighborhood);
 neighborhoods_layer.on('click', function(e) {
 	//console.log('x,y = ', x, y);
     neighborhood_name = e.layer.feature.properties.name;
+    //console.log($.cookie('hit'));
     map.eachLayer(function(layer) {
         feature = layer['feature'];
 
@@ -128,12 +192,13 @@ neighborhoods_layer.on('click', function(e) {
         && feature.properties.name
         && neighborhood_name == feature.properties.name) {
             toggle_neighborhood_color(layer);
-			//console.log('layer');
-			console.log(neighborhood_name+'!');
-			console.log(feature.properties);
         }
     });
+    console.log($.cookie('hit'));
 });
+
+console.log('neighborhoods_layer');
+console.log(neighborhoods_layer);
 </script>
 </body>
 </html>
