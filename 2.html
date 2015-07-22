@@ -110,7 +110,11 @@ function initialize(self_coords) {
         
         n.eachLayer(function(distinct) {
             console.log('distinct > ');
-            console.log(distinct);
+            console.log(distinct.feature.id + ' => ' + distinct.feature.properties.name);
+            if (contains(hits, distinct.feature.id)) {
+                toggle_neighborhood_color(distinct);
+            }
+            
         });
     });
     //json.features = feature;
@@ -188,6 +192,7 @@ neighborhoods_layer.on('click', function(e) {
         && feature.properties.name
         && neighborhood_name == feature.properties.name) {
             toggle_neighborhood_color(layer);
+            console.log("Hey! that's "+ feature.id +", " + neighborhood_name);
         }
     });
     console.log($.cookie('hit'));
