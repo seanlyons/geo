@@ -61,7 +61,7 @@ function contains(haystack, needle) {
 
 function generate_cookie_id(len) {
     if ($.cookie('id')) {
-        console.log($.cookie('hit'));
+        console.log('64', $.cookie('hit'));
         return;
     }
     len = (len || 29);
@@ -92,36 +92,32 @@ function initialize(self_coords) {
 	
     default_css = { fillColor: '#444', weight: 1 };
 	neighborhoods_layer = L.geoJson(geojson, default_css).addTo(map);
-        
+    
 	$.getJSON("sf2.json", function(json) {
         var i = 0;
         feature = [];
         $.each(json, function(x) {
             json[x].features[0]['id'] = x;
-            neighborhoods_layer.addData(json[x]);
+            n = neighborhoods_layer.addData(json[x]);
         });
-        return true;
+    
+        hits = JSON.parse( $.cookie('hit') );
 
-        $.each(json['features'], function() {
-            i++;
-            if (this) {
-                ent = this;
-                ent.id = i;
-                feature.push(ent);
-            }
+        console.log('hits!');
+        console.log(hits);
+        console.log('!hits!');    
+        
+        
+        n.eachLayer(function(distinct) {
+            console.log('distinct > ');
+            console.log(distinct);
         });
-        json.features = feature;
-        neighborhoods_layer.addData(json);
-        console.log(neighborhoods_layer);
-	});
+    });
+    //json.features = feature;
+    //neighborhoods_layer.addData(json);
+    //console.log(neighborhoods_layer);
     
     i = 0;
-    hits = JSON.parse( $.cookie('hit') );
-
-    console.log('neighborhoods_layer!');
-    console.log(neighborhoods_layer);
-    console.log(neighborhoods_layer.getLayers());
-    console.log('!neighborhoods_layer!');
 }
 
 function get_location() {
@@ -197,8 +193,8 @@ neighborhoods_layer.on('click', function(e) {
     console.log($.cookie('hit'));
 });
 
-console.log('neighborhoods_layer');
-console.log(neighborhoods_layer);
+//console.log('neighborhoods_layer');
+//console.log(neighborhoods_layer);
 </script>
 </body>
 </html>
