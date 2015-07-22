@@ -71,11 +71,12 @@ function generate_cookie_id(len) {
 generate_cookie_id();
 
 function initialize(self_coords) {
+    //Public key, from https://www.mapbox.com/account/apps/
     L.mapbox.accessToken = 'pk.eyJ1IjoiZHVlbmRlIiwiYSI6Ijk0NDg5NTU2M2Q3OGU2ZmZhMWNjYzg3MjMyOWM1YmVlIn0.dKQrnkU5ALH3ezZ9pZ4Yeg';
     sf_coords = [37.765,-122.44];
     map = L.mapbox.map('map-one', 'mapbox.streets').setView(sf_coords, 13);
 	
-    default_css = { fillColor: '#444', weight: 1 };
+    default_css = { fillColor: '#444', weight: 2 };
 	neighborhoods_layer = L.geoJson(geojson, default_css).addTo(map);
     
 	$.getJSON("sf2.json", function(json) {
@@ -85,18 +86,13 @@ function initialize(self_coords) {
         });
     
         hits = JSON.parse( $.cookie('hit') );
-
-        debug('hits!');
-        debug(hits);
-        debug('!hits!');    
                
         n.eachLayer(function(distinct) {
             debug('distinct > ');
             debug(distinct.feature.id + ' => ' + distinct.feature.properties.name);
             if (contains(hits, distinct.feature.id)) {
                 toggle_neighborhood_color(distinct);
-            }
-            
+            }            
         });
     });
 }
@@ -109,16 +105,27 @@ function obtain_x_y(position) {
 	x = position.coords.latitude;
 	y = position.coords.longitude;
 	L.marker([x, y]).addTo(map);
+    
+    var results = leafletPip.pointInLayer([y, x], neighborhoods_layer, false);
+
+    name = results[0].feature.properties.name;
+    id = results[0].feature.id
+    
+    greet_neighborhood(name, id, "You are in");
 }
 
+//True = That neighborhood is now ON (pink)
+//False = now off.
 function toggle_neighborhood_color(layer) {
 	off = '#444';
 	on = '#f00';
+    
 	if (!layer.options.fillColor
 	|| !layer.options
 	|| !layer.options.fillColor) {
 		return;
 	}
+    
     id = layer.feature.id;
     if (!$.cookie('hit')) {
         window.alert('how are you missing the hit cookie?');
@@ -129,17 +136,26 @@ function toggle_neighborhood_color(layer) {
 	if (layer.options.fillColor == off) {
 		layer.setStyle({color:on, fillColor:on});
         add_ele(hits, id);
+        is_now_on = true;
 	} else {
         del_ele(hits, id);
 		layer.setStyle({color:off, fillColor:off});
+        is_now_on = false;
 	}
     $.cookie('hit', JSON.stringify( hits ));
+    return is_now_on;
 }
 
 function in_neighborhood(x_y, callback_name) {
 	map.eachLayer(function(layer) {
 		callback_name(layer);
 	});
+}
+
+function greet_neighborhood(name, id, prefix_str) {
+    str = prefix_str + " " + name;
+    $('#neighborhood_greet').text(str);
+    $('#neighborhood_greet').finish().show().delay(1000).fadeOut("slow");
 }
 
 function locate_neighborhood(arg) {
@@ -159,8 +175,10 @@ neighborhoods_layer.on('click', function(e) {
         && feature.properties
         && feature.properties.name
         && neighborhood_name == feature.properties.name) {
-            toggle_neighborhood_color(layer);
-            debug("Hey! that's "+ feature.id +", " + neighborhood_name);
+            is_now_on = toggle_neighborhood_color(layer);
+            if (is_now_on) {
+                greet_neighborhood(neighborhood_name, feature.id, "");
+            }
         }
     });
     debug($.cookie('hit'));
