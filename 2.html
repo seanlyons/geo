@@ -72,10 +72,8 @@ function generate_cookie_id(len) {
     
     //Generate a high-entropy string to stand in for the UID. This produces something like 29^62 (4.6e90)
     //combinations per second, which is random enough for me. Can add OAuth or something later if needed.
-    
     alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     now = Math.floor((new Date).getTime() / 1000);
-    //debug(now);
     str = '';
     for (i = 0; i <= len; i++) {
         str += alphanum[Math.floor((Math.random() * alphanum.length) + 1)];
@@ -98,8 +96,6 @@ function initialize(self_coords) {
 	neighborhoods_layer = L.geoJson(geojson, default_css).addTo(map);
     
 	$.getJSON("sf2.json", function(json) {
-        var i = 0;
-        feature = [];
         $.each(json, function(x) {
             json[x].features[0]['id'] = x;
             n = neighborhoods_layer.addData(json[x]);
@@ -110,8 +106,7 @@ function initialize(self_coords) {
         debug('hits!');
         debug(hits);
         debug('!hits!');    
-        
-        
+               
         n.eachLayer(function(distinct) {
             debug('distinct > ');
             debug(distinct.feature.id + ' => ' + distinct.feature.properties.name);
@@ -121,11 +116,6 @@ function initialize(self_coords) {
             
         });
     });
-    //json.features = feature;
-    //neighborhoods_layer.addData(json);
-    //debug(neighborhoods_layer);
-    
-    i = 0;
 }
 
 function get_location() {
@@ -144,10 +134,7 @@ function toggle_neighborhood_color(layer) {
 	if (!layer.options.fillColor
 	|| !layer.options
 	|| !layer.options.fillColor) {
-		//debug('No layer.options.fillColor found!');
 		return;
-	} else {
-		//debug('layer.options.fillColor = ' + layer.options.fillColor);
 	}
     id = layer.feature.id;
     if (!$.cookie('hit')) {
@@ -155,8 +142,6 @@ function toggle_neighborhood_color(layer) {
         return;
     }
     hits = JSON.parse( $.cookie('hit') );
-    //debug(typeof(hits), hits);
-
     
 	if (layer.options.fillColor == off) {
 		layer.setStyle({color:on, fillColor:on});
@@ -165,13 +150,11 @@ function toggle_neighborhood_color(layer) {
         del_ele(hits, id);
 		layer.setStyle({color:off, fillColor:off});
 	}
-    //debug(hits);
     $.cookie('hit', JSON.stringify( hits ));
 }
 
 function in_neighborhood(x_y, callback_name) {
 	map.eachLayer(function(layer) {
-		//debug(layer);
 		callback_name(layer);
 	});
 }
@@ -185,9 +168,7 @@ initialize([x, y]);
 in_neighborhood([x, y], locate_neighborhood);
 
 neighborhoods_layer.on('click', function(e) {
-	//debug('x,y = ', x, y);
     neighborhood_name = e.layer.feature.properties.name;
-    //debug($.cookie('hit'));
     map.eachLayer(function(layer) {
         feature = layer['feature'];
 
@@ -201,9 +182,6 @@ neighborhoods_layer.on('click', function(e) {
     });
     debug($.cookie('hit'));
 });
-
-//debug('neighborhoods_layer');
-//debug(neighborhoods_layer);
 </script>
 </body>
-</html>
+</html>>
