@@ -23,29 +23,33 @@ var L;
 var x = 37.729223;
 var y = -122.444564;
 
+function debug(str) {
+    //console.log(str);
+}
+
 function add_ele(obj, ele) {
-    console.log('add_ele: obj is ', obj, ' ele is ' + ele);
+    debug('add_ele: obj is ', obj, ' ele is ' + ele);
     for (i in obj) {
-        console.log('add_ele: i ', i, 'obj[i] = ' +obj[i]+', ele = ', ele);
+        debug('add_ele: i ', i, 'obj[i] = ' +obj[i]+', ele = ', ele);
         if (obj[i] == ele) {
-            console.log('add_ele: found!');
+            debug('add_ele: found!');
             return;
         }
     }
     obj.push(ele);
-    console.log('add_ele: done!');
+    debug('add_ele: done!');
 }
 
 function del_ele(obj, ele) {
-    console.log('del_ele: obj is ', obj, ' ele is ' + ele);
+    debug('del_ele: obj is ', obj, ' ele is ' + ele);
     for (i in obj) {
-        console.log('del_ele: i ', i, ' = ', ele);
+        debug('del_ele: i ', i, ' = ', ele);
         if (obj[i] == ele) {
             obj.splice(i, 1);
-            console.log('del_ele: found!');
+            debug('del_ele: found!');
         }
     }
-    console.log('del_ele: returning obj ', obj);
+    debug('del_ele: returning obj ', obj);
     return;
 }
 
@@ -61,7 +65,7 @@ function contains(haystack, needle) {
 
 function generate_cookie_id(len) {
     if ($.cookie('id')) {
-        console.log('64', $.cookie('hit'));
+        debug('64', $.cookie('hit'));
         return;
     }
     len = (len || 29);
@@ -71,7 +75,7 @@ function generate_cookie_id(len) {
     
     alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     now = Math.floor((new Date).getTime() / 1000);
-    //console.log(now);
+    //debug(now);
     str = '';
     for (i = 0; i <= len; i++) {
         str += alphanum[Math.floor((Math.random() * alphanum.length) + 1)];
@@ -103,14 +107,14 @@ function initialize(self_coords) {
     
         hits = JSON.parse( $.cookie('hit') );
 
-        console.log('hits!');
-        console.log(hits);
-        console.log('!hits!');    
+        debug('hits!');
+        debug(hits);
+        debug('!hits!');    
         
         
         n.eachLayer(function(distinct) {
-            console.log('distinct > ');
-            console.log(distinct.feature.id + ' => ' + distinct.feature.properties.name);
+            debug('distinct > ');
+            debug(distinct.feature.id + ' => ' + distinct.feature.properties.name);
             if (contains(hits, distinct.feature.id)) {
                 toggle_neighborhood_color(distinct);
             }
@@ -119,7 +123,7 @@ function initialize(self_coords) {
     });
     //json.features = feature;
     //neighborhoods_layer.addData(json);
-    //console.log(neighborhoods_layer);
+    //debug(neighborhoods_layer);
     
     i = 0;
 }
@@ -140,10 +144,10 @@ function toggle_neighborhood_color(layer) {
 	if (!layer.options.fillColor
 	|| !layer.options
 	|| !layer.options.fillColor) {
-		//console.log('No layer.options.fillColor found!');
+		//debug('No layer.options.fillColor found!');
 		return;
 	} else {
-		//console.log('layer.options.fillColor = ' + layer.options.fillColor);
+		//debug('layer.options.fillColor = ' + layer.options.fillColor);
 	}
     id = layer.feature.id;
     if (!$.cookie('hit')) {
@@ -151,7 +155,7 @@ function toggle_neighborhood_color(layer) {
         return;
     }
     hits = JSON.parse( $.cookie('hit') );
-    //console.log(typeof(hits), hits);
+    //debug(typeof(hits), hits);
 
     
 	if (layer.options.fillColor == off) {
@@ -161,19 +165,19 @@ function toggle_neighborhood_color(layer) {
         del_ele(hits, id);
 		layer.setStyle({color:off, fillColor:off});
 	}
-    //console.log(hits);
+    //debug(hits);
     $.cookie('hit', JSON.stringify( hits ));
 }
 
 function in_neighborhood(x_y, callback_name) {
 	map.eachLayer(function(layer) {
-		//console.log(layer);
+		//debug(layer);
 		callback_name(layer);
 	});
 }
 
 function locate_neighborhood(arg) {
-	//console.log("FNORD! " + arg);
+	//debug("FNORD! " + arg);
 }
 
 get_location();
@@ -181,9 +185,9 @@ initialize([x, y]);
 in_neighborhood([x, y], locate_neighborhood);
 
 neighborhoods_layer.on('click', function(e) {
-	//console.log('x,y = ', x, y);
+	//debug('x,y = ', x, y);
     neighborhood_name = e.layer.feature.properties.name;
-    //console.log($.cookie('hit'));
+    //debug($.cookie('hit'));
     map.eachLayer(function(layer) {
         feature = layer['feature'];
 
@@ -192,14 +196,14 @@ neighborhoods_layer.on('click', function(e) {
         && feature.properties.name
         && neighborhood_name == feature.properties.name) {
             toggle_neighborhood_color(layer);
-            console.log("Hey! that's "+ feature.id +", " + neighborhood_name);
+            debug("Hey! that's "+ feature.id +", " + neighborhood_name);
         }
     });
-    console.log($.cookie('hit'));
+    debug($.cookie('hit'));
 });
 
-//console.log('neighborhoods_layer');
-//console.log(neighborhoods_layer);
+//debug('neighborhoods_layer');
+//debug(neighborhoods_layer);
 </script>
 </body>
 </html>
