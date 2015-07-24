@@ -118,7 +118,8 @@ function obtain_x_y(position) {
 //False = now off.
 function toggle_neighborhood_color(layer) {
 	off = '#444';
-	on = '#f00';
+	stroke_off = '#03F';
+	on = '#F00';
     
 	if (!layer.options.fillColor
 	|| !layer.options
@@ -139,7 +140,7 @@ function toggle_neighborhood_color(layer) {
         is_now_on = true;
 	} else {
         del_ele(hits, id);
-		layer.setStyle({color:off, fillColor:off});
+		layer.setStyle({color:stroke_off, fillColor:off});
         is_now_on = false;
 	}
     $.cookie('hit', JSON.stringify( hits ));

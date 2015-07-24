@@ -18,7 +18,10 @@ body {
     height:1px;
     font-family:sans-serif;
     font-weight:bold;
-    font-size:40pt;
+    font-size:45pt;
+    color:white;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: red;
     text-align:center;
     /*background:green;*/
     background:green;
