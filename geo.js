@@ -192,3 +192,20 @@ neighborhoods_layer.on('click', function(e) {
     });
     debug($.cookie('hit'));
 });
+
+$("input[type='file']").change(function() {
+    var f0 = $('form')[0];
+    var formData = new FormData(f0);
+    
+    $.ajax({
+        url: 'register.php',  //Server script to process data
+        type: 'POST',
+        //beforeSend: beforeSendHandler,
+        //success: completeHandler,
+        //error: errorHandler,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+});
