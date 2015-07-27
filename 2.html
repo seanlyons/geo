@@ -13,10 +13,17 @@
     <body>
         <div id='map-one' class='map'> </div>
         <div id='neighborhood_greet'>hi</div>
-        <div id='media'>
+        <!--div id='media'>
             <div id='camera'><a href='#'><img src="images/camera_icon.png" width="22" height="22"/></a></div>
             <div id='video'><a href='#'><img src="images/video_icon.png" width="22" height="22" /></a></div>
-        </div>
+        </div-->
+        <form id='ajax_form' enctype="multipart/form-data">
+            <input name="uid" placeholder="uid" />
+            <input name="x" placeholder="x" />
+            <input name="y" placeholder="y" />
+            <input name="neighborhood" placeholder="neighborhood" />
+            <input type="file" name="media"/>
+        </form>
     </body>
     <footer>
         <script type="text/javascript" src="geo.js"></script>
