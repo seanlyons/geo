@@ -117,7 +117,11 @@ function obtain_x_y(position) {
     var results = leafletPip.pointInLayer([y, x], neighborhoods_layer, false);
 
     name = results[0].feature.properties.name;
-    id = results[0].feature.id
+    id = results[0].feature.id;
+    
+    $("input[name='x']").val(x);
+    $("input[name='y']").val(y);
+    $("input[name='neighborhood']").val(id);
     
     greet_neighborhood(name, id, "You are in");
 }
