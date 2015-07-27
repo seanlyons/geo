@@ -45,23 +45,31 @@ function contains(haystack, needle) {
     return false;
 }
 
+function get_rand_char() {
+    //Generate a high-entropy string to stand in for the UID. This produces something like 28^62 (2.3e90)
+    //combinations per second, which is random enough for me. Can add OAuth or something later if needed.
+    alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';    
+    mult = Math.random() * alphanum.length;
+    floor = Math.floor(mult);
+    result = alphanum[floor];
+    
+    return result;
+}
 
 function generate_cookie_id(len) {
     if ($.cookie('id')) {
-        debug('64', $.cookie('hit'));
+        $("input[name='uid']").val($.cookie('id'));
         return;
     }
-    len = (len || 29);
+    len = (len || 28);
     
-    //Generate a high-entropy string to stand in for the UID. This produces something like 29^62 (4.6e90)
-    //combinations per second, which is random enough for me. Can add OAuth or something later if needed.
-    alphanum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     now = Math.floor((new Date).getTime() / 1000);
     str = '';
     for (i = 0; i <= len; i++) {
-        str += alphanum[Math.floor((Math.random() * alphanum.length) + 1)];
+        str += get_rand_char();
     }
     str += '_' + now;
+    $("input[name='uid']").val(str);
     $.cookie('id', str);
     empty = [];
     $.cookie('hit', JSON.stringify(empty));
