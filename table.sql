@@ -72,13 +72,14 @@ CREATE TABLE IF NOT EXISTS `geo_media` (
 
 CREATE TABLE IF NOT EXISTS `geo_users` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `reg_sec` INT(11) NOT NULL,
     `hash` VARCHAR(40) NOT NULL, /* Not md5; custom hashy thing, for now at least */
     `perms` INT DEFAULT 1, /* 1 = Can see their own media, but nobody else's. 0 = account disabled/deleted on their own. -1 = account deleted by admins. */
     `default_gnis` INT DEFAULT 2411786, /*2411786 = San Francisco! http://geonames.usgs.gov/apex/f?p=gnispq:3:::NO::P3_FID:2411786 */
     `contact_type` INT DEFAULT 1, /* 1 = guest */
     `contact_value` VARCHAR(256) DEFAULT NULL,
-    PRIMARY KEY `id` (`id`),
-    KEY `hash` (`hash`)
+    PRIMARY KEY `cookie` (`reg_sec`, `hash`),
+    KEY `id` (`id`)
 ) ENGINE=InnoDB;
 
 /* TODO: Create `lists` table
