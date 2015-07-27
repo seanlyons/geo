@@ -87,17 +87,54 @@ class GeoException extends Exception {
 //Need to extend exception to accept http response code parameter
 //Continue sanitizing/checking everything
 
+function get_userid($uid) {
+    $db = new Db;
+    
+    $hash = substr($uid, 0, 29);
+    $reg_sec = substr($uid, 30, 11);
+    
+    $details['verb'] = 'select';
+    $details['actor'] = 'geo_users';
+    $details['where_aa'] = array('hash' => $hash, 'reg_sec' => $reg_sec);
+    $result = $db->cmd( $details );
+
+    if (empty($result['data'])) {
+        return NULL;
+    }
+    return $result['data'][0]['id'];
+}
+
+function create_userid($uid) {
+    print_r('moved to '.__line__);
+    $db = new Db;
+    
+    $hash = substr($uid, 0, 29);
+    $reg_sec = substr($uid, 30, 11);
+    
+    $details = array();
+    $details['verb'] = 'insert';
+    $details['actor'] = 'geo_users';
+    $details['relevant'] = array(
+        'hash' => $hash,
+        'reg_sec' => $reg_sec
+    );
+    $details['limit'] = 1;
+    $outcome = $db->cmd( $details );
+}
+
 try {
-    print_r($_REQUEST);
-    print_r($_SERVER);
     //TODO: sanitize/scrub request
     extract($_REQUEST);
     
     $checkmark = $neighborhood;
-    $user_id = $uid;
+
+    $user_id = get_userid($uid);
+    if (empty($user_id)) {
+        $user_id = create_userid($uid);
+    }
     
     if (!isset($_FILES['media'])) {
-        throw new GeoException('File element media not found".');
+        throw new GeoException('File element media not found.');
     }
     
     $media = $_FILES['media'];
@@ -135,7 +172,8 @@ try {
         'file_extension' => $file_extension
     );
     $details['limit'] = 1;
-    $outcome = $db->cmd( $details );    
+    $outcome = $db->cmd( $details );
+    echo json_encode($outcome);
 } catch (GeoException $e) {
     $e->display();
 }/* catch (Exception $e) {
